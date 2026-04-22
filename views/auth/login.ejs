@@ -1,24 +1,26 @@
-<div class="card bg-base-200 shadow max-w-md mx-auto">
-  <div class="card-body">
-    <h2 class="card-title">Login</h2>
+<div class="py-10">
+  <div class="panel max-w-md mx-auto">
+    <h1 class="font-display text-3xl tracking-tight mb-1">Welcome back.</h1>
+    <p class="text-sm text-tertiary mb-6">Sign in to your board.</p>
+
     <%- include('../partials/flash') %>
-    <form method="POST" action="/login" class="flex flex-col gap-3" novalidate>
-      <label class="form-control">
-        <span class="label-text">Username or email</span>
-        <input name="identifier" type="text" required
-               autocomplete="username"
-               value="<%= values.identifier || '' %>"
-               class="input input-bordered" />
-      </label>
-      <label class="form-control">
-        <span class="label-text">Password</span>
-        <input name="password" type="password" required
-               autocomplete="current-password"
-               class="input input-bordered" />
-      </label>
-      <button type="submit" class="btn btn-primary mt-2">Login</button>
-      <p class="text-sm opacity-70 text-center">
-        No account? <a href="/register" class="link">Register</a>
+
+    <form method="POST" action="/login" class="flex flex-col gap-4" novalidate>
+      <div class="field">
+        <label for="identifier" class="field-label">Username or email</label>
+        <input id="identifier" name="identifier" type="text" required autocomplete="username" autofocus
+               value="<%= values.identifier || '' %>" class="input" />
+      </div>
+
+      <div class="field">
+        <label for="password" class="field-label">Password</label>
+        <input id="password" name="password" type="password" required autocomplete="current-password"
+               class="input" />
+      </div>
+
+      <button type="submit" class="btn btn-primary mt-2">Sign in</button>
+      <p class="text-sm text-tertiary text-center">
+        No account? <a href="/register" class="link">Create one</a>
       </p>
     </form>
   </div>

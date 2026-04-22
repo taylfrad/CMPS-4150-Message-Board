@@ -1,16 +1,360 @@
 <!doctype html>
-<html lang="en" data-theme="dark">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f5f5f7" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)" />
     <title><%= typeof title !== 'undefined' ? title : 'MessageBoard' %> · MessageBoard</title>
-    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" />
+
+    <script>
+      // Resolve theme before first paint to avoid flash.
+      (function () {
+        try {
+          var pref = localStorage.getItem('theme-pref') || 'system';
+          var resolved = pref === 'system'
+            ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+            : pref;
+          document.documentElement.setAttribute('data-theme', resolved);
+          document.documentElement.setAttribute('data-theme-pref', pref);
+        } catch (e) {
+          document.documentElement.setAttribute('data-theme', 'light');
+        }
+      })();
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&display=swap"
+      rel="stylesheet"
+    />
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+      :root {
+        --bg: #f5f5f7;
+        --surface: #ffffff;
+        --surface-2: #fbfbfd;
+        --border: rgba(0, 0, 0, 0.08);
+        --border-strong: rgba(0, 0, 0, 0.14);
+        --text: #1d1d1f;
+        --text-2: #424245;
+        --text-3: #6e6e73;
+        --text-4: #86868b;
+        --accent: #0071e3;
+        --accent-hover: #0077ed;
+        --accent-soft: rgba(0, 113, 227, 0.1);
+        --danger: #ff3b30;
+        --danger-soft: rgba(255, 59, 48, 0.1);
+        --success: #30d158;
+        --glass: rgba(255, 255, 255, 0.72);
+        --shadow-xs: 0 0 0 0.5px rgba(0, 0, 0, 0.06);
+        --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04), 0 0 0 0.5px rgba(0, 0, 0, 0.06);
+        --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.06), 0 0 0 0.5px rgba(0, 0, 0, 0.06);
+        --shadow-lg: 0 24px 68px rgba(0, 0, 0, 0.12), 0 0 0 0.5px rgba(0, 0, 0, 0.06);
+        --radius-sm: 8px;
+        --radius: 12px;
+        --radius-lg: 18px;
+        --radius-xl: 28px;
+        --ease: cubic-bezier(0.4, 0, 0.2, 1);
+        --ease-spring: cubic-bezier(0.32, 0.72, 0, 1);
+        color-scheme: light;
+      }
+
+      [data-theme='dark'] {
+        --bg: #000000;
+        --surface: #1c1c1e;
+        --surface-2: #2c2c2e;
+        --border: rgba(255, 255, 255, 0.08);
+        --border-strong: rgba(255, 255, 255, 0.16);
+        --text: #f5f5f7;
+        --text-2: #d1d1d6;
+        --text-3: #a1a1a6;
+        --text-4: #8e8e93;
+        --accent: #0a84ff;
+        --accent-hover: #409cff;
+        --accent-soft: rgba(10, 132, 255, 0.18);
+        --danger: #ff453a;
+        --danger-soft: rgba(255, 69, 58, 0.18);
+        --success: #32d74b;
+        --glass: rgba(22, 22, 23, 0.72);
+        --shadow-xs: 0 0 0 0.5px rgba(255, 255, 255, 0.06);
+        --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3), 0 0 0 0.5px rgba(255, 255, 255, 0.06);
+        --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 0 0.5px rgba(255, 255, 255, 0.06);
+        --shadow-lg: 0 24px 68px rgba(0, 0, 0, 0.55), 0 0 0 0.5px rgba(255, 255, 255, 0.08);
+        color-scheme: dark;
+      }
+
+      * {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      html, body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue',
+          'Segoe UI', system-ui, sans-serif;
+        font-feature-settings: 'ss01', 'cv11';
+        letter-spacing: -0.011em;
+        transition: background-color 0.24s var(--ease), color 0.24s var(--ease);
+      }
+
+      .font-display {
+        font-family: 'Fraunces', 'New York', 'Iowan Old Style', Charter, ui-serif, Georgia, serif;
+        font-weight: 400;
+        letter-spacing: -0.028em;
+        font-variation-settings: 'SOFT' 50, 'WONK' 0, 'opsz' 96;
+      }
+
+      /* ─── Nav ─── */
+      .nav {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        background: var(--glass);
+        backdrop-filter: saturate(180%) blur(24px);
+        -webkit-backdrop-filter: saturate(180%) blur(24px);
+        border-bottom: 0.5px solid var(--border);
+      }
+      .nav-inner {
+        max-width: 1080px;
+        margin: 0 auto;
+        padding: 0.75rem 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+      .nav-brand {
+        font-family: 'Fraunces', serif;
+        font-weight: 500;
+        font-size: 1.18rem;
+        letter-spacing: -0.025em;
+        color: var(--text);
+        text-decoration: none;
+      }
+      .nav-link {
+        font-size: 0.885rem;
+        color: var(--text-2);
+        text-decoration: none;
+        padding: 0.45rem 0.8rem;
+        border-radius: 980px;
+        transition: color 0.18s var(--ease), background 0.18s var(--ease);
+      }
+      .nav-link:hover { color: var(--text); background: var(--accent-soft); }
+
+      /* ─── Buttons ─── */
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        padding: 0.55rem 1.1rem;
+        font-size: 0.9rem;
+        font-weight: 500;
+        letter-spacing: -0.01em;
+        border-radius: 980px;
+        border: 1px solid transparent;
+        cursor: pointer;
+        transition: transform 0.12s var(--ease-spring), background 0.2s var(--ease),
+          color 0.2s var(--ease), border-color 0.2s var(--ease);
+        white-space: nowrap;
+        font-family: inherit;
+      }
+      .btn:active { transform: scale(0.97); }
+      .btn-sm { padding: 0.38rem 0.85rem; font-size: 0.82rem; }
+      .btn-xs { padding: 0.25rem 0.65rem; font-size: 0.76rem; }
+
+      .btn-primary { background: var(--accent); color: #fff; }
+      .btn-primary:hover { background: var(--accent-hover); }
+
+      .btn-secondary {
+        background: var(--surface);
+        color: var(--text);
+        border-color: var(--border-strong);
+      }
+      .btn-secondary:hover { background: var(--surface-2); }
+
+      .btn-ghost { background: transparent; color: var(--text-2); }
+      .btn-ghost:hover { color: var(--text); background: var(--accent-soft); }
+
+      .btn-danger-ghost { background: transparent; color: var(--danger); }
+      .btn-danger-ghost:hover { background: var(--danger-soft); }
+
+      /* ─── Inputs ─── */
+      .input, .textarea {
+        width: 100%;
+        background: var(--surface);
+        color: var(--text);
+        border: 0.5px solid var(--border-strong);
+        border-radius: var(--radius);
+        padding: 0.72rem 0.9rem;
+        font-size: 0.95rem;
+        font-family: inherit;
+        transition: border-color 0.15s var(--ease), box-shadow 0.15s var(--ease),
+          background 0.15s var(--ease);
+      }
+      .textarea { resize: vertical; min-height: 84px; line-height: 1.5; }
+      .input:focus, .textarea:focus {
+        outline: none;
+        border-color: var(--accent);
+        box-shadow: 0 0 0 4px var(--accent-soft);
+      }
+      .input::placeholder, .textarea::placeholder { color: var(--text-4); }
+
+      .field { display: flex; flex-direction: column; gap: 0.38rem; }
+      .field-label { font-size: 0.82rem; color: var(--text-3); font-weight: 500; }
+
+      /* ─── Cards / surfaces ─── */
+      .card {
+        background: var(--surface);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
+        transition: box-shadow 0.24s var(--ease), transform 0.24s var(--ease);
+      }
+      .card-body { padding: 1.25rem 1.35rem; }
+      .card-body-tight { padding: 0.95rem 1.1rem; }
+      a.card:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
+
+      .panel {
+        background: var(--surface);
+        border-radius: var(--radius-xl);
+        box-shadow: var(--shadow-sm);
+        padding: 2rem;
+      }
+
+      /* ─── Misc ─── */
+      .divider { height: 0.5px; background: var(--border); border: 0; margin: 0; }
+      .hairline-top { border-top: 0.5px solid var(--border); }
+
+      .link { color: var(--accent); text-decoration: none; }
+      .link:hover { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 2px; }
+
+      .alert {
+        padding: 0.7rem 0.95rem;
+        border-radius: var(--radius);
+        font-size: 0.88rem;
+        background: var(--accent-soft);
+        color: var(--accent);
+      }
+      .alert-error { background: var(--danger-soft); color: var(--danger); }
+      .alert-info  { background: var(--surface-2); color: var(--text-2); border: 0.5px solid var(--border); }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.1rem 0.5rem;
+        font-size: 0.7rem;
+        font-weight: 600;
+        letter-spacing: 0;
+        border-radius: 980px;
+        background: var(--accent);
+        color: #fff;
+      }
+      .badge-soft { background: var(--accent-soft); color: var(--accent); }
+
+      .mono { font-family: 'SF Mono', 'JetBrains Mono', ui-monospace, 'Menlo', monospace; }
+
+      /* ─── Theme picker (segmented) ─── */
+      .theme-picker {
+        display: inline-flex;
+        background: rgba(120, 120, 128, 0.12);
+        border-radius: 980px;
+        padding: 2px;
+        gap: 0;
+      }
+      [data-theme='dark'] .theme-picker { background: rgba(120, 120, 128, 0.24); }
+      .theme-picker button {
+        background: transparent;
+        border: none;
+        color: var(--text-3);
+        padding: 0.28rem 0.7rem;
+        font: inherit;
+        font-size: 0.76rem;
+        font-weight: 500;
+        border-radius: 980px;
+        cursor: pointer;
+        transition: background 0.22s var(--ease), color 0.22s var(--ease),
+          box-shadow 0.22s var(--ease);
+        display: inline-flex; align-items: center; gap: 4px;
+      }
+      .theme-picker button:hover { color: var(--text-2); }
+      .theme-picker button[aria-pressed='true'] {
+        background: var(--surface);
+        color: var(--text);
+        box-shadow: var(--shadow-xs);
+      }
+      .theme-picker svg { width: 12px; height: 12px; }
+
+      /* ─── Page wrap ─── */
+      .wrap {
+        max-width: 880px;
+        margin: 0 auto;
+        padding: 2.5rem 1.25rem 4rem;
+      }
+
+      /* ─── Entry animation (one, not scattered) ─── */
+      @keyframes riseIn {
+        from { opacity: 0; transform: translateY(8px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+      main > * { animation: riseIn 0.42s var(--ease-spring) both; }
+      main > *:nth-child(2) { animation-delay: 0.04s; }
+      main > *:nth-child(3) { animation-delay: 0.08s; }
+      main > *:nth-child(4) { animation-delay: 0.12s; }
+
+      /* ─── Utility overrides ─── */
+      .text-secondary { color: var(--text-2); }
+      .text-tertiary  { color: var(--text-3); }
+      .text-quaternary{ color: var(--text-4); }
+      .text-danger    { color: var(--danger); }
+      .bg-surface     { background: var(--surface); }
+      .bg-surface-2   { background: var(--surface-2); }
+      .border-hair    { border: 0.5px solid var(--border); }
+    </style>
   </head>
-  <body class="min-h-screen bg-base-100 text-base-content">
+  <body>
     <%- include('partials/nav') %>
-    <main class="container mx-auto px-4 py-8 max-w-3xl">
+    <main class="wrap">
       <%- body %>
     </main>
+
+    <script>
+      // Theme picker controller: syncs <html data-theme-pref> + data-theme,
+      // updates segmented button state, reacts to system preference changes.
+      (function () {
+        var media = window.matchMedia('(prefers-color-scheme: dark)');
+
+        function apply(pref) {
+          var resolved = pref === 'system'
+            ? (media.matches ? 'dark' : 'light')
+            : pref;
+          document.documentElement.setAttribute('data-theme', resolved);
+          document.documentElement.setAttribute('data-theme-pref', pref);
+          try { localStorage.setItem('theme-pref', pref); } catch (e) {}
+          document.querySelectorAll('.theme-picker button').forEach(function (b) {
+            b.setAttribute('aria-pressed', String(b.dataset.theme === pref));
+          });
+        }
+
+        document.addEventListener('click', function (e) {
+          var btn = e.target.closest('.theme-picker button');
+          if (!btn) return;
+          apply(btn.dataset.theme);
+        });
+
+        media.addEventListener && media.addEventListener('change', function () {
+          var pref = document.documentElement.getAttribute('data-theme-pref') || 'system';
+          if (pref === 'system') apply('system');
+        });
+
+        // Init button state from current pref.
+        var pref = document.documentElement.getAttribute('data-theme-pref') || 'system';
+        document.querySelectorAll('.theme-picker button').forEach(function (b) {
+          b.setAttribute('aria-pressed', String(b.dataset.theme === pref));
+        });
+      })();
+    </script>
   </body>
 </html>

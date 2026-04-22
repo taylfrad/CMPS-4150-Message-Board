@@ -1,66 +1,76 @@
-<div class="mb-4 flex items-start justify-between gap-4">
-  <div>
-    <h1 class="text-2xl font-bold"><%= topic.title %></h1>
-    <p class="text-sm opacity-70">
-      by <%= topic.author ? topic.author.username : '(deleted)' %> ·
+<div class="mb-5">
+  <a href="/topics" class="text-sm link">← Topics</a>
+</div>
+
+<header class="mb-8 flex items-start justify-between gap-4">
+  <div class="min-w-0 flex-1">
+    <h1 class="font-display text-4xl sm:text-5xl tracking-tight leading-[1.05] text-balance">
+      <%= topic.title %>
+    </h1>
+    <p class="text-sm text-tertiary mt-2">
+      by <span class="text-secondary"><%= topic.author ? topic.author.username : '(deleted)' %></span>
+      <span class="text-quaternary">·</span>
       <%= topic.subscribers.length %>
-      subscriber<%= topic.subscribers.length === 1 ? '' : 's' %> ·
-      <%= topic.accessCount || 0 %>
+      subscriber<%= topic.subscribers.length === 1 ? '' : 's' %>
+      <span class="text-quaternary">·</span>
+      <span class="mono"><%= topic.accessCount || 0 %></span>
       view<%= (topic.accessCount || 0) === 1 ? '' : 's' %>
     </p>
   </div>
   <% if (currentUser) { %>
     <form method="POST" action="/topics/<%= topic._id %>/<%= isSubscribed ? 'unsubscribe' : 'subscribe' %>">
-      <button type="submit" class="btn btn-sm <%= isSubscribed ? 'btn-ghost' : 'btn-primary' %>">
+      <button type="submit" class="btn <%= isSubscribed ? 'btn-secondary' : 'btn-primary' %> btn-sm">
         <%= isSubscribed ? 'Unsubscribe' : 'Subscribe' %>
       </button>
     </form>
   <% } %>
-</div>
+</header>
 
 <% if (topic.body) { %>
-  <div class="card bg-base-200 mb-4">
-    <div class="card-body py-4">
-      <p class="whitespace-pre-wrap"><%= topic.body %></p>
-    </div>
+  <div class="card card-body mb-6">
+    <p class="whitespace-pre-wrap leading-relaxed text-secondary"><%= topic.body %></p>
   </div>
 <% } %>
 
 <%- include('../partials/flash') %>
 
-<h2 class="text-lg font-semibold mb-2">Messages</h2>
-<div class="flex flex-col gap-2 mb-6">
+<section class="mb-6">
+  <h2 class="text-sm font-semibold uppercase tracking-[0.12em] text-tertiary mb-3">
+    Messages
+    <% if (messages.length > 0) { %>
+      <span class="text-quaternary font-normal normal-case tracking-normal ml-1">· <%= messages.length %></span>
+    <% } %>
+  </h2>
+
   <% if (messages.length === 0) { %>
-    <div class="opacity-60 text-sm">No messages yet. Be the first.</div>
-  <% } %>
-  <% messages.forEach(function (m) { %>
-    <div class="card bg-base-200">
-      <div class="card-body py-3">
-        <div class="flex justify-between items-baseline gap-2">
-          <span class="font-semibold"><%= m.author ? m.author.username : '(deleted)' %></span>
-          <span class="text-xs opacity-50"><%= new Date(m.createdAt).toLocaleString() %></span>
+    <p class="text-tertiary text-sm italic">No messages yet.</p>
+  <% } else { %>
+    <div class="flex flex-col gap-2">
+      <% messages.forEach(function (m) { %>
+        <div class="card card-body-tight">
+          <div class="flex items-baseline justify-between gap-2 mb-1">
+            <span class="font-semibold text-sm"><%= m.author ? m.author.username : '(deleted)' %></span>
+            <span class="text-xs text-quaternary mono"><%= new Date(m.createdAt).toLocaleString() %></span>
+          </div>
+          <p class="whitespace-pre-wrap text-secondary leading-relaxed"><%= m.text %></p>
         </div>
-        <p class="whitespace-pre-wrap"><%= m.text %></p>
-      </div>
+      <% }) %>
     </div>
-  <% }) %>
-</div>
+  <% } %>
+</section>
 
 <% if (currentUser && isSubscribed) { %>
   <form method="POST" action="/topics/<%= topic._id %>/messages" class="flex flex-col gap-2">
-    <textarea name="text" required maxlength="2000" rows="3"
-              class="textarea textarea-bordered"
-              placeholder="Write a message..."><%= values.text || '' %></textarea>
-    <button type="submit" class="btn btn-primary self-end">Post</button>
+    <textarea name="text" required maxlength="2000" rows="3" class="textarea"
+              placeholder="Add to the thread..."><%= values.text || '' %></textarea>
+    <div class="flex justify-end">
+      <button type="submit" class="btn btn-primary">Post</button>
+    </div>
   </form>
 <% } else if (currentUser) { %>
-  <div class="alert">
-    <span>Subscribe to this topic to post a message.</span>
-  </div>
+  <div class="alert alert-info">Subscribe to this topic to post a message.</div>
 <% } else { %>
-  <div class="alert">
-    <span>
-      Please <a href="/login" class="link">login</a> to post or subscribe.
-    </span>
+  <div class="alert alert-info">
+    <a href="/login" class="link">Sign in</a> to subscribe and post.
   </div>
 <% } %>

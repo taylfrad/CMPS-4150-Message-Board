@@ -1,23 +1,30 @@
-<div class="card bg-base-200 shadow max-w-xl mx-auto">
-  <div class="card-body">
-    <h2 class="card-title">New topic</h2>
-    <%- include('../partials/flash') %>
-    <form method="POST" action="/topics" class="flex flex-col gap-3">
-      <label class="form-control">
-        <span class="label-text">Title</span>
-        <input name="title" type="text" required minlength="3" maxlength="120"
-               value="<%= values.title || '' %>"
-               class="input input-bordered" />
-      </label>
-      <label class="form-control">
-        <span class="label-text">Body <span class="opacity-50">(optional)</span></span>
-        <textarea name="body" maxlength="2000" rows="5"
-                  class="textarea textarea-bordered"><%= values.body || '' %></textarea>
-      </label>
-      <div class="flex gap-2 justify-end mt-2">
-        <a href="/topics" class="btn btn-ghost">Cancel</a>
-        <button type="submit" class="btn btn-primary">Create topic</button>
-      </div>
-    </form>
-  </div>
+<div class="mb-6">
+  <a href="/topics" class="text-sm link">← Topics</a>
+</div>
+
+<div class="panel max-w-xl mx-auto">
+  <h1 class="font-display text-3xl tracking-tight mb-1">Start a topic.</h1>
+  <p class="text-sm text-tertiary mb-6">You'll be subscribed automatically.</p>
+
+  <%- include('../partials/flash') %>
+
+  <form method="POST" action="/topics" class="flex flex-col gap-4">
+    <div class="field">
+      <label for="title" class="field-label">Title</label>
+      <input id="title" name="title" type="text" required minlength="3" maxlength="120"
+             value="<%= values.title || '' %>"
+             class="input" placeholder="What is this thread about?" />
+    </div>
+
+    <div class="field">
+      <label for="body" class="field-label">Body <span class="text-quaternary font-normal">(optional)</span></label>
+      <textarea id="body" name="body" maxlength="2000" rows="5"
+                class="textarea" placeholder="Set the scene."><%= values.body || '' %></textarea>
+    </div>
+
+    <div class="flex items-center gap-3 justify-end mt-1">
+      <a href="/topics" class="btn btn-ghost">Cancel</a>
+      <button type="submit" class="btn btn-primary">Create topic</button>
+    </div>
+  </form>
 </div>

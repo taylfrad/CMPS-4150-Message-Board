@@ -1,24 +1,41 @@
-<div class="hero rounded-box bg-base-200">
-  <div class="hero-content text-center py-16">
-    <div class="max-w-md">
-      <h1 class="text-4xl font-bold">MessageBoard</h1>
-      <% if (currentUser) { %>
-        <p class="py-6 opacity-80">
-          Welcome back, <span class="font-semibold"><%= currentUser.username %></span>.
-        </p>
-        <div class="flex justify-center gap-2">
-          <a href="/topics" class="btn">Browse topics</a>
-          <a href="/topics/new" class="btn btn-primary">New topic</a>
-        </div>
-      <% } else { %>
-        <p class="py-6 opacity-80">
-          A simple place to post topics and get notified about new replies.
-        </p>
-        <div class="flex justify-center gap-2">
-          <a href="/topics" class="btn">Browse topics</a>
-          <a href="/register" class="btn btn-primary">Register</a>
-        </div>
-      <% } %>
-    </div>
+<section class="py-16 sm:py-24 text-center">
+  <p class="text-xs uppercase tracking-[0.18em] text-tertiary mb-5">A small message board</p>
+  <h1 class="font-display text-5xl sm:text-7xl leading-[1.02] tracking-tight text-balance">
+    <% if (currentUser) { %>
+      Hello, <span class="italic"><%= currentUser.username %></span>.
+    <% } else { %>
+      Write, follow, <span class="italic">be notified</span>.
+    <% } %>
+  </h1>
+  <p class="mt-5 text-lg text-secondary max-w-xl mx-auto leading-relaxed">
+    <% if (currentUser) { %>
+      Jump back into the threads you follow, or start something new.
+    <% } else { %>
+      Post topics. Subscribe to threads. Get a quiet ping when someone replies.
+    <% } %>
+  </p>
+  <div class="mt-8 flex justify-center gap-3">
+    <% if (currentUser) { %>
+      <a href="/topics" class="btn btn-secondary">Browse topics</a>
+      <a href="/topics/new" class="btn btn-primary">New topic</a>
+    <% } else { %>
+      <a href="/topics" class="btn btn-secondary">Browse topics</a>
+      <a href="/register" class="btn btn-primary">Create account</a>
+    <% } %>
   </div>
-</div>
+</section>
+
+<section class="grid sm:grid-cols-3 gap-3 sm:gap-5 mt-4">
+  <div class="card card-body">
+    <p class="font-display text-3xl">Threads.</p>
+    <p class="text-sm text-tertiary mt-1">Start a topic, everyone else can follow.</p>
+  </div>
+  <div class="card card-body">
+    <p class="font-display text-3xl">Signals.</p>
+    <p class="text-sm text-tertiary mt-1">Only subscribers hear new replies. No noise.</p>
+  </div>
+  <div class="card card-body">
+    <p class="font-display text-3xl">Stats.</p>
+    <p class="text-sm text-tertiary mt-1">See which threads get the most attention.</p>
+  </div>
+</section>

@@ -1,35 +1,39 @@
-<div class="flex justify-between items-center mb-4">
-  <h1 class="text-2xl font-bold">Topics</h1>
+<div class="flex items-end justify-between mb-8 gap-4">
+  <div>
+    <p class="text-xs uppercase tracking-[0.16em] text-tertiary mb-1">All threads</p>
+    <h1 class="font-display text-5xl tracking-tight leading-[1.05]">Topics.</h1>
+  </div>
   <% if (currentUser) { %>
-    <a href="/topics/new" class="btn btn-primary btn-sm">New topic</a>
+    <a href="/topics/new" class="btn btn-primary">New topic</a>
+  <% } else { %>
+    <a href="/register" class="btn btn-primary">Join to post</a>
   <% } %>
 </div>
 
 <% if (topics.length === 0) { %>
-  <div class="card bg-base-200">
-    <div class="card-body text-center opacity-70">
-      No topics yet.
-      <% if (currentUser) { %>
-        <a href="/topics/new" class="link">Create the first one.</a>
-      <% } else { %>
-        <a href="/register" class="link">Register</a> to start one.
-      <% } %>
-    </div>
+  <div class="card card-body text-center text-tertiary">
+    No topics yet.
+    <% if (currentUser) { %>
+      <a href="/topics/new" class="link ml-1">Start the first one →</a>
+    <% } %>
   </div>
 <% } else { %>
-  <div class="flex flex-col gap-3">
+  <div class="flex flex-col gap-2">
     <% topics.forEach(function (t) { %>
-      <a href="/topics/<%= t._id %>" class="card bg-base-200 hover:bg-base-300 transition">
-        <div class="card-body py-4">
-          <h3 class="card-title"><%= t.title %></h3>
-          <p class="text-sm opacity-70">
-            by <%= t.author ? t.author.username : '(deleted)' %> ·
+      <a href="/topics/<%= t._id %>" class="card card-body-tight flex items-center justify-between gap-4">
+        <div class="min-w-0 flex-1">
+          <p class="font-display text-2xl tracking-tight leading-snug text-balance"><%= t.title %></p>
+          <p class="text-xs text-tertiary mt-1">
+            by <%= t.author ? t.author.username : '(deleted)' %>
+            <span class="text-quaternary">·</span>
             <%= (t.subscribers || []).length %>
-            subscriber<%= (t.subscribers || []).length === 1 ? '' : 's' %> ·
-            <%= t.accessCount || 0 %>
+            subscriber<%= (t.subscribers || []).length === 1 ? '' : 's' %>
+            <span class="text-quaternary">·</span>
+            <span class="mono"><%= t.accessCount || 0 %></span>
             view<%= (t.accessCount || 0) === 1 ? '' : 's' %>
           </p>
         </div>
+        <span class="text-quaternary text-sm">→</span>
       </a>
     <% }) %>
   </div>

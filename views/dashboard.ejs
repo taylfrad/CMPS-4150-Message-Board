@@ -1,48 +1,60 @@
-<div class="flex justify-between items-center mb-4">
-  <h1 class="text-2xl font-bold">Hi, <%= currentUser.username %></h1>
-  <a href="/topics/new" class="btn btn-primary btn-sm">New topic</a>
+<div class="flex items-end justify-between gap-4 mb-8">
+  <div>
+    <p class="text-xs uppercase tracking-[0.16em] text-tertiary mb-1">Signed in as <%= currentUser.username %></p>
+    <h1 class="font-display text-5xl leading-[1.05] tracking-tight">Your board.</h1>
+  </div>
+  <a href="/topics/new" class="btn btn-primary">New topic</a>
 </div>
 
-<section class="mb-8">
-  <h2 class="text-lg font-semibold mb-3 opacity-80">Your topics</h2>
+<section class="mb-10">
+  <div class="flex items-baseline justify-between mb-3">
+    <h2 class="text-sm font-semibold uppercase tracking-[0.12em] text-tertiary">Subscribed</h2>
+    <% if (subscribed.length > 0) { %>
+      <span class="text-xs text-quaternary"><%= subscribed.length %> topic<%= subscribed.length === 1 ? '' : 's' %></span>
+    <% } %>
+  </div>
+
   <% if (subscribed.length === 0) { %>
-    <div class="card bg-base-200">
-      <div class="card-body text-center opacity-70 py-6">
-        You're not subscribed to any topics yet. Pick one below or
-        <a href="/topics/new" class="link">start your own</a>.
-      </div>
+    <div class="card card-body text-center">
+      <p class="text-secondary">You haven't subscribed to anything yet.</p>
+      <p class="text-sm text-tertiary mt-1">
+        Pick one from below or <a href="/topics/new" class="link">start your own</a>.
+      </p>
     </div>
   <% } else { %>
     <div class="flex flex-col gap-3">
       <% subscribed.forEach(function (t) { %>
-        <div class="card bg-base-200">
-          <div class="card-body py-4">
-            <div class="flex justify-between items-start gap-3">
-              <div>
-                <a href="/topics/<%= t._id %>" class="card-title link link-hover">
+        <div class="card">
+          <div class="card-body">
+            <div class="flex items-start justify-between gap-4">
+              <div class="min-w-0 flex-1">
+                <a href="/topics/<%= t._id %>" class="font-display text-2xl tracking-tight leading-snug text-balance hover:opacity-80 transition-opacity">
                   <%= t.title %>
                 </a>
-                <p class="text-xs opacity-60 mt-1">
-                  by <%= t.author ? t.author.username : '(deleted)' %> ·
-                  <%= t.accessCount || 0 %> view<%= (t.accessCount || 0) === 1 ? '' : 's' %>
+                <p class="text-xs text-tertiary mt-1">
+                  by <%= t.author ? t.author.username : '(deleted)' %>
+                  <span class="text-quaternary">·</span>
+                  <span class="mono"><%= t.accessCount || 0 %></span>
+                  view<%= (t.accessCount || 0) === 1 ? '' : 's' %>
                 </p>
               </div>
               <form method="POST" action="/topics/<%= t._id %>/unsubscribe">
-                <button type="submit" class="btn btn-xs btn-ghost">Unsubscribe</button>
+                <button type="submit" class="btn btn-ghost btn-xs">Unsubscribe</button>
               </form>
             </div>
 
             <% if (t.recentMessages && t.recentMessages.length > 0) { %>
-              <div class="mt-2 border-t border-base-300 pt-2 flex flex-col gap-1">
+              <div class="mt-3 hairline-top pt-3 flex flex-col gap-1.5">
                 <% t.recentMessages.forEach(function (m) { %>
-                  <div class="text-sm">
-                    <span class="font-semibold"><%= m.author ? m.author.username : '(deleted)' %>:</span>
-                    <span class="opacity-80"><%= m.text.length > 120 ? m.text.slice(0, 120) + '…' : m.text %></span>
+                  <div class="text-sm leading-snug">
+                    <span class="font-medium"><%= m.author ? m.author.username : '(deleted)' %></span>
+                    <span class="text-quaternary">·</span>
+                    <span class="text-secondary"><%= m.text.length > 140 ? m.text.slice(0, 140) + '…' : m.text %></span>
                   </div>
                 <% }) %>
               </div>
             <% } else { %>
-              <p class="text-sm opacity-50 mt-2">No messages yet.</p>
+              <p class="text-sm text-quaternary mt-2 italic">No messages yet.</p>
             <% } %>
           </div>
         </div>
@@ -52,30 +64,34 @@
 </section>
 
 <section>
-  <h2 class="text-lg font-semibold mb-3 opacity-80">Available to subscribe</h2>
+  <div class="flex items-baseline justify-between mb-3">
+    <h2 class="text-sm font-semibold uppercase tracking-[0.12em] text-tertiary">Available</h2>
+    <a href="/topics" class="text-xs link">Browse all →</a>
+  </div>
+
   <% if (available.length === 0) { %>
-    <div class="card bg-base-200">
-      <div class="card-body text-center opacity-70 py-6">
-        Nothing else right now.
-      </div>
-    </div>
+    <div class="card card-body text-center text-tertiary">Nothing else right now.</div>
   <% } else { %>
     <div class="flex flex-col gap-2">
       <% available.forEach(function (t) { %>
-        <div class="card bg-base-200">
-          <div class="card-body py-3 flex-row items-center justify-between gap-3">
-            <div class="flex-1 min-w-0">
-              <a href="/topics/<%= t._id %>" class="font-semibold link link-hover">
+        <div class="card">
+          <div class="card-body-tight flex items-center justify-between gap-4">
+            <div class="min-w-0 flex-1">
+              <a href="/topics/<%= t._id %>" class="font-semibold hover:opacity-70 transition-opacity">
                 <%= t.title %>
               </a>
-              <p class="text-xs opacity-60">
-                by <%= t.author ? t.author.username : '(deleted)' %> ·
-                <%= (t.subscribers || []).length %> subscriber<%= (t.subscribers || []).length === 1 ? '' : 's' %> ·
-                <%= t.accessCount || 0 %> view<%= (t.accessCount || 0) === 1 ? '' : 's' %>
+              <p class="text-xs text-tertiary mt-0.5">
+                by <%= t.author ? t.author.username : '(deleted)' %>
+                <span class="text-quaternary">·</span>
+                <%= (t.subscribers || []).length %>
+                subscriber<%= (t.subscribers || []).length === 1 ? '' : 's' %>
+                <span class="text-quaternary">·</span>
+                <span class="mono"><%= t.accessCount || 0 %></span>
+                view<%= (t.accessCount || 0) === 1 ? '' : 's' %>
               </p>
             </div>
             <form method="POST" action="/topics/<%= t._id %>/subscribe">
-              <button type="submit" class="btn btn-sm btn-primary">Subscribe</button>
+              <button type="submit" class="btn btn-secondary btn-sm">Subscribe</button>
             </form>
           </div>
         </div>

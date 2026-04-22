@@ -1,31 +1,33 @@
-<div class="card bg-base-200 shadow max-w-md mx-auto">
-  <div class="card-body">
-    <h2 class="card-title">Create an account</h2>
+<div class="py-10">
+  <div class="panel max-w-md mx-auto">
+    <h1 class="font-display text-3xl tracking-tight mb-1">Create account.</h1>
+    <p class="text-sm text-tertiary mb-6">It takes about fifteen seconds.</p>
+
     <%- include('../partials/flash') %>
-    <form method="POST" action="/register" class="flex flex-col gap-3" novalidate>
-      <label class="form-control">
-        <span class="label-text">Username</span>
-        <input name="username" type="text" required minlength="3" maxlength="32"
-               autocomplete="username"
-               value="<%= values.username || '' %>"
-               class="input input-bordered" />
-      </label>
-      <label class="form-control">
-        <span class="label-text">Email</span>
-        <input name="email" type="email" required
-               autocomplete="email"
-               value="<%= values.email || '' %>"
-               class="input input-bordered" />
-      </label>
-      <label class="form-control">
-        <span class="label-text">Password</span>
-        <input name="password" type="password" required minlength="8"
-               autocomplete="new-password"
-               class="input input-bordered" />
-      </label>
-      <button type="submit" class="btn btn-primary mt-2">Register</button>
-      <p class="text-sm opacity-70 text-center">
-        Already have an account? <a href="/login" class="link">Login</a>
+
+    <form method="POST" action="/register" class="flex flex-col gap-4" novalidate>
+      <div class="field">
+        <label for="username" class="field-label">Username</label>
+        <input id="username" name="username" type="text" required minlength="3" maxlength="32"
+               autocomplete="username" autofocus
+               value="<%= values.username || '' %>" class="input" />
+      </div>
+
+      <div class="field">
+        <label for="email" class="field-label">Email</label>
+        <input id="email" name="email" type="email" required autocomplete="email"
+               value="<%= values.email || '' %>" class="input" />
+      </div>
+
+      <div class="field">
+        <label for="password" class="field-label">Password <span class="text-quaternary font-normal">— 8+ characters</span></label>
+        <input id="password" name="password" type="password" required minlength="8"
+               autocomplete="new-password" class="input" />
+      </div>
+
+      <button type="submit" class="btn btn-primary mt-2">Create account</button>
+      <p class="text-sm text-tertiary text-center">
+        Already registered? <a href="/login" class="link">Sign in</a>
       </p>
     </form>
   </div>
