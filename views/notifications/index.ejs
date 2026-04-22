@@ -27,7 +27,8 @@
             <p class="text-xs text-tertiary mt-0.5">
               <span class="text-secondary"><%= n.topic ? n.topic.title : '(topic deleted)' %></span>
               <span class="text-quaternary">·</span>
-              <span class="mono"><%= new Date(n.createdAt).toLocaleString() %></span>
+              <time class="ts"
+                    datetime="<%= new Date(n.createdAt).toISOString() %>"><%= new Date(n.createdAt).toISOString() %></time>
             </p>
           </div>
           <% if (!n.read) { %>

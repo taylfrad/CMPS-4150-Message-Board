@@ -583,6 +583,60 @@
         });
       })();
 
+      // Timestamp formatter — renders every <time class="ts"> in the user's
+      // local timezone with Apple Messages-style smart relative formatting.
+      (function () {
+        function timePart(d) {
+          return d.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
+        }
+
+        function smart(d) {
+          var now = new Date();
+          var diffMs = now - d;
+          var diffMin = Math.floor(diffMs / 60000);
+
+          var sameDay = now.toDateString() === d.toDateString();
+          var ydObj = new Date(now); ydObj.setDate(ydObj.getDate() - 1);
+          var isYesterday = ydObj.toDateString() === d.toDateString();
+          var withinWeek = diffMs >= 0 && diffMs < 7 * 86400000;
+
+          if (diffMin < 1 && diffMs >= 0) return 'just now';
+          if (diffMin < 60 && diffMs >= 0) return diffMin + ' min ago';
+          if (sameDay) return timePart(d);
+          if (isYesterday) return 'Yesterday ' + timePart(d);
+          if (withinWeek) {
+            return d.toLocaleDateString(undefined, { weekday: 'short' }) + ' ' + timePart(d);
+          }
+          if (d.getFullYear() === now.getFullYear()) {
+            return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+          }
+          return d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+        }
+
+        function full(d) {
+          return d.toLocaleString(undefined, {
+            year: 'numeric', month: 'short', day: 'numeric',
+            hour: 'numeric', minute: '2-digit',
+            timeZoneName: 'short'
+          });
+        }
+
+        function renderAll() {
+          document.querySelectorAll('time.ts').forEach(function (el) {
+            var iso = el.getAttribute('datetime');
+            if (!iso) return;
+            var d = new Date(iso);
+            if (isNaN(d.getTime())) return;
+            el.textContent = smart(d);
+            el.title = full(d);
+          });
+        }
+
+        renderAll();
+        // Keep relative labels fresh without needing a reload.
+        setInterval(renderAll, 60000);
+      })();
+
       // Confirmation dialog.
       (function () {
         var dlg = document.getElementById('confirm-dialog');
