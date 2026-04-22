@@ -540,6 +540,20 @@
       .scroll-top:active { transform: scale(0.92); }
       .scroll-top svg { width: 16px; height: 16px; }
 
+      /* ─── Page transitions (MPA cross-fade via View Transitions API) ─── */
+      @view-transition { navigation: auto; }
+      ::view-transition-old(root) {
+        animation: vt-fade-out 180ms var(--ease) both;
+      }
+      ::view-transition-new(root) {
+        animation: vt-fade-in 320ms var(--ease-spring) both;
+      }
+      @keyframes vt-fade-out { to { opacity: 0; } }
+      @keyframes vt-fade-in  {
+        from { opacity: 0; transform: translateY(6px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+
       /* ─── Entry animation ─── */
       @keyframes riseIn {
         from { opacity: 0; transform: translateY(8px); }
@@ -549,6 +563,54 @@
       main > *:nth-child(2) { animation-delay: 0.04s; }
       main > *:nth-child(3) { animation-delay: 0.08s; }
       main > *:nth-child(4) { animation-delay: 0.12s; }
+
+      /* ─── Hero headline: blur-to-sharp rise ─── */
+      @keyframes hero-rise {
+        from { opacity: 0; transform: translateY(14px); filter: blur(10px); }
+        to   { opacity: 1; transform: translateY(0);    filter: blur(0); }
+      }
+      .hero-glow h1 { animation: hero-rise 0.85s var(--ease-spring) 0.1s both; }
+
+      /* ─── Scroll reveal — IntersectionObserver adds .in ─── */
+      .reveal {
+        opacity: 0;
+        transform: translateY(18px);
+        transition: opacity 0.6s var(--ease-spring),
+          transform 0.6s var(--ease-spring);
+        will-change: opacity, transform;
+      }
+      .reveal.in {
+        opacity: 1;
+        transform: translateY(0);
+        will-change: auto;
+      }
+
+      /* ─── Topic row arrow — slides right + tints on card hover ─── */
+      .arrow {
+        display: inline-block;
+        color: var(--label-4);
+        transition: transform 0.26s var(--ease-spring), color 0.22s var(--ease);
+      }
+      a.card:hover .arrow,
+      button.card:hover .arrow {
+        transform: translateX(4px);
+        color: var(--accent);
+      }
+
+      /* ─── Unread badge — gentle pulse ─── */
+      @keyframes badge-pulse {
+        0%, 100% { transform: scale(1);    box-shadow: 0 0 0 0 var(--accent-soft); }
+        50%      { transform: scale(1.08); box-shadow: 0 0 0 6px transparent; }
+      }
+      .badge-pulse { animation: badge-pulse 2.4s var(--ease) infinite; }
+
+      /* ─── Smooth color transitions on theme switch ─── */
+      .card, .btn, .input, .textarea, .panel, .nav, dialog.confirm,
+      .theme-picker, .theme-picker button, .alert, .scroll-top {
+        transition-property: background-color, color, border-color, box-shadow, transform;
+        transition-duration: 0.26s;
+        transition-timing-function: var(--ease);
+      }
 
       /* ─── Utility classes bound to Apple labels ─── */
       .text-primary    { color: var(--label-1); }
@@ -629,6 +691,61 @@
         document.querySelectorAll('.theme-picker button').forEach(function (b) {
           b.setAttribute('aria-pressed', String(b.dataset.theme === pref));
         });
+      })();
+
+      // Scroll-reveal: fade + lift elements with class "reveal" as they enter view.
+      (function () {
+        var els = document.querySelectorAll('.reveal');
+        if (!els.length) return;
+        if (!('IntersectionObserver' in window) ||
+            window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          els.forEach(function (el) { el.classList.add('in'); });
+          return;
+        }
+        var io = new IntersectionObserver(function (entries) {
+          entries.forEach(function (e) {
+            if (e.isIntersecting) {
+              e.target.classList.add('in');
+              io.unobserve(e.target);
+            }
+          });
+        }, { rootMargin: '0px 0px -60px 0px', threshold: 0.08 });
+        els.forEach(function (el) { io.observe(el); });
+      })();
+
+      // Count-up: [data-count] numbers tick from 0 to their target when in view.
+      (function () {
+        var nodes = document.querySelectorAll('[data-count]');
+        if (!nodes.length) return;
+        var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        function tick(el) {
+          var target = parseInt(el.getAttribute('data-count'), 10) || 0;
+          if (reduce) { el.textContent = target.toLocaleString(); return; }
+          var duration = Math.min(1200, 300 + target * 40);
+          var start = performance.now();
+          function frame(now) {
+            var t = Math.min(1, (now - start) / duration);
+            var eased = 1 - Math.pow(1 - t, 3);
+            el.textContent = Math.floor(eased * target).toLocaleString();
+            if (t < 1) requestAnimationFrame(frame);
+            else el.textContent = target.toLocaleString();
+          }
+          // Zero it first for the dramatic count-up.
+          el.textContent = '0';
+          requestAnimationFrame(frame);
+        }
+
+        if (!('IntersectionObserver' in window)) {
+          nodes.forEach(tick);
+          return;
+        }
+        var io = new IntersectionObserver(function (entries) {
+          entries.forEach(function (e) {
+            if (e.isIntersecting) { tick(e.target); io.unobserve(e.target); }
+          });
+        }, { threshold: 0.4 });
+        nodes.forEach(function (el) { io.observe(el); });
       })();
 
       // Scroll-to-top button.

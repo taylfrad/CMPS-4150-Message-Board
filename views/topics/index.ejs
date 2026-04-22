@@ -20,7 +20,7 @@
 <% } else { %>
   <div class="flex flex-col gap-2">
     <% topics.forEach(function (t) { %>
-      <a href="/topics/<%= t._id %>" class="card card-body-tight flex items-center justify-between gap-4">
+      <a href="/topics/<%= t._id %>" class="card card-body-tight reveal flex items-center justify-between gap-4">
         <div class="min-w-0 flex-1">
           <p class="font-display text-2xl tracking-tight leading-snug text-balance"><%= t.title %></p>
           <p class="text-xs text-tertiary mt-1">
@@ -33,7 +33,7 @@
             view<%= (t.accessCount || 0) === 1 ? '' : 's' %>
           </p>
         </div>
-        <span class="text-quaternary text-sm">→</span>
+        <span class="arrow text-sm">→</span>
       </a>
     <% }) %>
   </div>

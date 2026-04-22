@@ -21,7 +21,7 @@
   <div class="flex flex-col gap-2">
     <% notifications.forEach(function (n) { %>
       <form method="POST" action="/notifications/<%= n._id %>/read">
-        <button type="submit" class="card card-body-tight w-full text-left flex items-start justify-between gap-3 <%= n.read ? 'opacity-60' : '' %>">
+        <button type="submit" class="card card-body-tight reveal w-full text-left flex items-start justify-between gap-3 <%= n.read ? 'opacity-60' : '' %>">
           <div class="min-w-0">
             <p class="font-semibold text-sm"><%= n.text %></p>
             <p class="text-xs text-tertiary mt-0.5">
