@@ -1,0 +1,36 @@
+<div class="flex justify-between items-center mb-4">
+  <h1 class="text-2xl font-bold">Notifications</h1>
+  <% if (notifications.some(function (n) { return !n.read; })) { %>
+    <form method="POST" action="/notifications/read-all">
+      <button type="submit" class="btn btn-sm btn-ghost">Mark all read</button>
+    </form>
+  <% } %>
+</div>
+
+<% if (notifications.length === 0) { %>
+  <div class="card bg-base-200">
+    <div class="card-body text-center opacity-70">Nothing yet.</div>
+  </div>
+<% } else { %>
+  <div class="flex flex-col gap-2">
+    <% notifications.forEach(function (n) { %>
+      <form method="POST" action="/notifications/<%= n._id %>/read">
+        <button type="submit"
+                class="card bg-base-200 hover:bg-base-300 transition w-full text-left <%= n.read ? 'opacity-60' : '' %>">
+          <div class="card-body py-3">
+            <div class="flex justify-between items-center gap-2">
+              <span class="font-semibold"><%= n.text %></span>
+              <% if (!n.read) { %>
+                <span class="badge badge-primary">new</span>
+              <% } %>
+            </div>
+            <p class="text-sm opacity-70">
+              <%= n.topic ? n.topic.title : '(topic deleted)' %> ·
+              <%= new Date(n.createdAt).toLocaleString() %>
+            </p>
+          </div>
+        </button>
+      </form>
+    <% }) %>
+  </div>
+<% } %>

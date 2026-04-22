@@ -1,0 +1,25 @@
+<div class="card bg-base-200 shadow max-w-md mx-auto">
+  <div class="card-body">
+    <h2 class="card-title">Login</h2>
+    <%- include('../partials/flash') %>
+    <form method="POST" action="/login" class="flex flex-col gap-3" novalidate>
+      <label class="form-control">
+        <span class="label-text">Username or email</span>
+        <input name="identifier" type="text" required
+               autocomplete="username"
+               value="<%= values.identifier || '' %>"
+               class="input input-bordered" />
+      </label>
+      <label class="form-control">
+        <span class="label-text">Password</span>
+        <input name="password" type="password" required
+               autocomplete="current-password"
+               class="input input-bordered" />
+      </label>
+      <button type="submit" class="btn btn-primary mt-2">Login</button>
+      <p class="text-sm opacity-70 text-center">
+        No account? <a href="/register" class="link">Register</a>
+      </p>
+    </form>
+  </div>
+</div>

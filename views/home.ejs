@@ -1,0 +1,24 @@
+<div class="hero rounded-box bg-base-200">
+  <div class="hero-content text-center py-16">
+    <div class="max-w-md">
+      <h1 class="text-4xl font-bold">MessageBoard</h1>
+      <% if (currentUser) { %>
+        <p class="py-6 opacity-80">
+          Welcome back, <span class="font-semibold"><%= currentUser.username %></span>.
+        </p>
+        <div class="flex justify-center gap-2">
+          <a href="/topics" class="btn">Browse topics</a>
+          <a href="/topics/new" class="btn btn-primary">New topic</a>
+        </div>
+      <% } else { %>
+        <p class="py-6 opacity-80">
+          A simple place to post topics and get notified about new replies.
+        </p>
+        <div class="flex justify-center gap-2">
+          <a href="/topics" class="btn">Browse topics</a>
+          <a href="/register" class="btn btn-primary">Register</a>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</div>

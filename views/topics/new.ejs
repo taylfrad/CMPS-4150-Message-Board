@@ -1,0 +1,23 @@
+<div class="card bg-base-200 shadow max-w-xl mx-auto">
+  <div class="card-body">
+    <h2 class="card-title">New topic</h2>
+    <%- include('../partials/flash') %>
+    <form method="POST" action="/topics" class="flex flex-col gap-3">
+      <label class="form-control">
+        <span class="label-text">Title</span>
+        <input name="title" type="text" required minlength="3" maxlength="120"
+               value="<%= values.title || '' %>"
+               class="input input-bordered" />
+      </label>
+      <label class="form-control">
+        <span class="label-text">Body <span class="opacity-50">(optional)</span></span>
+        <textarea name="body" maxlength="2000" rows="5"
+                  class="textarea textarea-bordered"><%= values.body || '' %></textarea>
+      </label>
+      <div class="flex gap-2 justify-end mt-2">
+        <a href="/topics" class="btn btn-ghost">Cancel</a>
+        <button type="submit" class="btn btn-primary">Create topic</button>
+      </div>
+    </form>
+  </div>
+</div>

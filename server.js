@@ -1,21 +1,16 @@
 require('dotenv').config();
-const express = require('express');
-const mongoose = require('mongoose');
 
-const app = express();
-
-app.get('/', (req, res) => res.send('alive'));
-
-app.get('/db', async (req, res) => {
-  try {
-    if (mongoose.connection.readyState === 0) {
-      await mongoose.connect(process.env.MONGODB_URI);
-    }
-    res.send('db ok');
-  } catch (e) {
-    res.status(500).send('db fail: ' + e.message);
-  }
-});
+const app = require('./app');
+const DatabaseConnection = require('./config/db');
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`up on ${PORT}`));
+
+(async () => {
+  try {
+    await DatabaseConnection.getInstance().connect();
+    app.listen(PORT, () => console.log(`up on ${PORT}`));
+  } catch (err) {
+    console.error('boot failed:', err.message);
+    process.exit(1);
+  }
+})();

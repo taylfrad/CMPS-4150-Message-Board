@@ -1,0 +1,85 @@
+<div class="flex justify-between items-center mb-4">
+  <h1 class="text-2xl font-bold">Hi, <%= currentUser.username %></h1>
+  <a href="/topics/new" class="btn btn-primary btn-sm">New topic</a>
+</div>
+
+<section class="mb-8">
+  <h2 class="text-lg font-semibold mb-3 opacity-80">Your topics</h2>
+  <% if (subscribed.length === 0) { %>
+    <div class="card bg-base-200">
+      <div class="card-body text-center opacity-70 py-6">
+        You're not subscribed to any topics yet. Pick one below or
+        <a href="/topics/new" class="link">start your own</a>.
+      </div>
+    </div>
+  <% } else { %>
+    <div class="flex flex-col gap-3">
+      <% subscribed.forEach(function (t) { %>
+        <div class="card bg-base-200">
+          <div class="card-body py-4">
+            <div class="flex justify-between items-start gap-3">
+              <div>
+                <a href="/topics/<%= t._id %>" class="card-title link link-hover">
+                  <%= t.title %>
+                </a>
+                <p class="text-xs opacity-60 mt-1">
+                  by <%= t.author ? t.author.username : '(deleted)' %> ·
+                  <%= t.accessCount || 0 %> view<%= (t.accessCount || 0) === 1 ? '' : 's' %>
+                </p>
+              </div>
+              <form method="POST" action="/topics/<%= t._id %>/unsubscribe">
+                <button type="submit" class="btn btn-xs btn-ghost">Unsubscribe</button>
+              </form>
+            </div>
+
+            <% if (t.recentMessages && t.recentMessages.length > 0) { %>
+              <div class="mt-2 border-t border-base-300 pt-2 flex flex-col gap-1">
+                <% t.recentMessages.forEach(function (m) { %>
+                  <div class="text-sm">
+                    <span class="font-semibold"><%= m.author ? m.author.username : '(deleted)' %>:</span>
+                    <span class="opacity-80"><%= m.text.length > 120 ? m.text.slice(0, 120) + '…' : m.text %></span>
+                  </div>
+                <% }) %>
+              </div>
+            <% } else { %>
+              <p class="text-sm opacity-50 mt-2">No messages yet.</p>
+            <% } %>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  <% } %>
+</section>
+
+<section>
+  <h2 class="text-lg font-semibold mb-3 opacity-80">Available to subscribe</h2>
+  <% if (available.length === 0) { %>
+    <div class="card bg-base-200">
+      <div class="card-body text-center opacity-70 py-6">
+        Nothing else right now.
+      </div>
+    </div>
+  <% } else { %>
+    <div class="flex flex-col gap-2">
+      <% available.forEach(function (t) { %>
+        <div class="card bg-base-200">
+          <div class="card-body py-3 flex-row items-center justify-between gap-3">
+            <div class="flex-1 min-w-0">
+              <a href="/topics/<%= t._id %>" class="font-semibold link link-hover">
+                <%= t.title %>
+              </a>
+              <p class="text-xs opacity-60">
+                by <%= t.author ? t.author.username : '(deleted)' %> ·
+                <%= (t.subscribers || []).length %> subscriber<%= (t.subscribers || []).length === 1 ? '' : 's' %> ·
+                <%= t.accessCount || 0 %> view<%= (t.accessCount || 0) === 1 ? '' : 's' %>
+              </p>
+            </div>
+            <form method="POST" action="/topics/<%= t._id %>/subscribe">
+              <button type="submit" class="btn btn-sm btn-primary">Subscribe</button>
+            </form>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  <% } %>
+</section>

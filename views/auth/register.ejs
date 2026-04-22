@@ -1,0 +1,32 @@
+<div class="card bg-base-200 shadow max-w-md mx-auto">
+  <div class="card-body">
+    <h2 class="card-title">Create an account</h2>
+    <%- include('../partials/flash') %>
+    <form method="POST" action="/register" class="flex flex-col gap-3" novalidate>
+      <label class="form-control">
+        <span class="label-text">Username</span>
+        <input name="username" type="text" required minlength="3" maxlength="32"
+               autocomplete="username"
+               value="<%= values.username || '' %>"
+               class="input input-bordered" />
+      </label>
+      <label class="form-control">
+        <span class="label-text">Email</span>
+        <input name="email" type="email" required
+               autocomplete="email"
+               value="<%= values.email || '' %>"
+               class="input input-bordered" />
+      </label>
+      <label class="form-control">
+        <span class="label-text">Password</span>
+        <input name="password" type="password" required minlength="8"
+               autocomplete="new-password"
+               class="input input-bordered" />
+      </label>
+      <button type="submit" class="btn btn-primary mt-2">Register</button>
+      <p class="text-sm opacity-70 text-center">
+        Already have an account? <a href="/login" class="link">Login</a>
+      </p>
+    </form>
+  </div>
+</div>
