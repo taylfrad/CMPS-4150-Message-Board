@@ -43,7 +43,10 @@
         <span class="text-tertiary text-sm hidden md:inline">
           <%= currentUser.username %>
         </span>
-        <form method="POST" action="/logout" class="inline">
+        <form method="POST" action="/logout" class="inline"
+              data-confirm="You'll be signed out of MessageBoard."
+              data-confirm-title="Sign out?"
+              data-confirm-label="Sign out">
           <button type="submit" class="btn btn-ghost btn-sm">Sign out</button>
         </form>
       <% } else { %>

@@ -18,7 +18,13 @@
     </p>
   </div>
   <% if (currentUser) { %>
-    <form method="POST" action="/topics/<%= topic._id %>/<%= isSubscribed ? 'unsubscribe' : 'subscribe' %>">
+    <form method="POST"
+          action="/topics/<%= topic._id %>/<%= isSubscribed ? 'unsubscribe' : 'subscribe' %>"
+          <% if (isSubscribed) { %>
+          data-confirm="You'll stop getting notifications for &ldquo;<%= topic.title %>&rdquo;."
+          data-confirm-title="Unsubscribe?"
+          data-confirm-label="Unsubscribe"
+          <% } %>>
       <button type="submit" class="btn <%= isSubscribed ? 'btn-secondary' : 'btn-primary' %> btn-sm">
         <%= isSubscribed ? 'Unsubscribe' : 'Subscribe' %>
       </button>

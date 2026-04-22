@@ -38,7 +38,10 @@
                   view<%= (t.accessCount || 0) === 1 ? '' : 's' %>
                 </p>
               </div>
-              <form method="POST" action="/topics/<%= t._id %>/unsubscribe">
+              <form method="POST" action="/topics/<%= t._id %>/unsubscribe"
+                    data-confirm="You'll stop getting notifications for &ldquo;<%= t.title %>&rdquo;."
+                    data-confirm-title="Unsubscribe?"
+                    data-confirm-label="Unsubscribe">
                 <button type="submit" class="btn btn-ghost btn-xs">Unsubscribe</button>
               </form>
             </div>

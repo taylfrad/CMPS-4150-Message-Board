@@ -4,7 +4,10 @@
     <h1 class="font-display text-5xl tracking-tight leading-[1.05]">Notifications.</h1>
   </div>
   <% if (notifications.some(function (n) { return !n.read; })) { %>
-    <form method="POST" action="/notifications/read-all">
+    <form method="POST" action="/notifications/read-all"
+          data-confirm="This will clear every unread notification."
+          data-confirm-title="Mark all as read?"
+          data-confirm-label="Mark all read">
       <button type="submit" class="btn btn-ghost btn-sm">Mark all read</button>
     </form>
   <% } %>

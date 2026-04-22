@@ -294,6 +294,55 @@
         padding: 2.5rem 1.25rem 4rem;
       }
 
+      /* ─── Confirmation dialog ─── */
+      dialog.confirm {
+        border: none;
+        padding: 0;
+        background: var(--surface);
+        color: var(--text);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-lg);
+        max-width: 380px;
+        width: calc(100% - 2rem);
+        font-family: inherit;
+      }
+      dialog.confirm::backdrop {
+        background: rgba(0, 0, 0, 0.32);
+        backdrop-filter: blur(6px);
+        -webkit-backdrop-filter: blur(6px);
+      }
+      dialog.confirm[open] { animation: dialogIn 0.24s var(--ease-spring); }
+      dialog.confirm[open]::backdrop { animation: backdropIn 0.22s var(--ease); }
+      @keyframes dialogIn {
+        from { opacity: 0; transform: translateY(8px) scale(0.98); }
+        to   { opacity: 1; transform: translateY(0)   scale(1); }
+      }
+      @keyframes backdropIn { from { opacity: 0; } to { opacity: 1; } }
+      .confirm-body-wrap {
+        padding: 1.4rem 1.5rem 1.25rem;
+      }
+      .confirm-title {
+        font-weight: 600;
+        font-size: 1.02rem;
+        letter-spacing: -0.01em;
+        text-align: center;
+        margin: 0 0 0.3rem;
+      }
+      .confirm-message {
+        font-size: 0.88rem;
+        color: var(--text-3);
+        text-align: center;
+        line-height: 1.45;
+        margin: 0 0 1.15rem;
+      }
+      .confirm-actions {
+        display: flex;
+        gap: 0.5rem;
+      }
+      .confirm-actions .btn { flex: 1; }
+      .btn-destructive { background: var(--danger); color: #fff; }
+      .btn-destructive:hover { filter: brightness(1.08); }
+
       /* ─── Entry animation (one, not scattered) ─── */
       @keyframes riseIn {
         from { opacity: 0; transform: translateY(8px); }
@@ -319,6 +368,17 @@
     <main class="wrap">
       <%- body %>
     </main>
+
+    <dialog id="confirm-dialog" class="confirm" aria-labelledby="confirm-title">
+      <div class="confirm-body-wrap">
+        <h3 id="confirm-title" class="confirm-title">Are you sure?</h3>
+        <p id="confirm-message" class="confirm-message"></p>
+        <div class="confirm-actions">
+          <button type="button" class="btn btn-secondary" data-confirm-action="cancel">Cancel</button>
+          <button type="button" class="btn btn-primary" data-confirm-action="ok">Confirm</button>
+        </div>
+      </div>
+    </dialog>
 
     <script>
       // Theme picker controller: syncs <html data-theme-pref> + data-theme,
@@ -353,6 +413,60 @@
         var pref = document.documentElement.getAttribute('data-theme-pref') || 'system';
         document.querySelectorAll('.theme-picker button').forEach(function (b) {
           b.setAttribute('aria-pressed', String(b.dataset.theme === pref));
+        });
+      })();
+
+      // Confirmation dialog for forms marked with data-confirm="…".
+      // Optional: data-confirm-title, data-confirm-label, data-confirm-destructive="true".
+      (function () {
+        var dlg = document.getElementById('confirm-dialog');
+        if (!dlg || typeof dlg.showModal !== 'function') return;
+        var titleEl = dlg.querySelector('#confirm-title');
+        var msgEl = dlg.querySelector('#confirm-message');
+        var okBtn = dlg.querySelector('[data-confirm-action="ok"]');
+        var cancelBtn = dlg.querySelector('[data-confirm-action="cancel"]');
+        var pending = null;
+
+        function open(form) {
+          pending = form;
+          titleEl.textContent = form.dataset.confirmTitle || 'Are you sure?';
+          msgEl.textContent = form.dataset.confirm || '';
+          var destructive = form.dataset.confirmDestructive === 'true';
+          okBtn.textContent = form.dataset.confirmLabel || (destructive ? 'Delete' : 'Confirm');
+          okBtn.className = 'btn ' + (destructive ? 'btn-destructive' : 'btn-primary');
+          dlg.showModal();
+          // Destructive actions focus Cancel to prevent accidental confirm.
+          (destructive ? cancelBtn : okBtn).focus();
+        }
+
+        function close(result) {
+          if (!pending) return;
+          var form = pending;
+          pending = null;
+          dlg.close();
+          if (result === 'ok') {
+            form.dataset.confirmed = 'true';
+            form.submit();
+          }
+        }
+
+        document.addEventListener('submit', function (e) {
+          var form = e.target.closest('form[data-confirm]');
+          if (!form) return;
+          if (form.dataset.confirmed === 'true') return;
+          e.preventDefault();
+          open(form);
+        });
+
+        okBtn.addEventListener('click', function () { close('ok'); });
+        cancelBtn.addEventListener('click', function () { close('cancel'); });
+        dlg.addEventListener('cancel', function () { close('cancel'); });
+        // Click outside the panel = cancel.
+        dlg.addEventListener('click', function (e) {
+          var r = dlg.getBoundingClientRect();
+          var inside = e.clientX >= r.left && e.clientX <= r.right &&
+                       e.clientY >= r.top  && e.clientY <= r.bottom;
+          if (!inside) close('cancel');
         });
       })();
     </script>
