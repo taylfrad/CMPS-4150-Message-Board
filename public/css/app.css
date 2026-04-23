@@ -186,10 +186,13 @@ h1, h2, h3, h4, .display {
 .nav-inner {
   max-width: 1080px;
   margin: 0 auto;
-  padding: 0.7rem 1.25rem;
+  padding: 0.7rem 0.9rem;
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.6rem;
+}
+@media (min-width: 640px) {
+  .nav-inner { padding: 0.7rem 1.25rem; gap: 1rem; }
 }
 .nav-brand {
   font-family: inherit;
@@ -233,6 +236,11 @@ h1, h2, h3, h4, .display {
 .btn:active { transform: scale(0.97); }
 .btn-sm { padding: 0.4rem 0.9rem; font-size: 0.82rem; }
 .btn-xs { padding: 0.28rem 0.7rem; font-size: 0.76rem; font-weight: 590; }
+/* Honor Tailwind's display utilities even when combined with .btn. */
+.btn.hidden { display: none; }
+@media (min-width: 640px) {
+  .btn.sm\:inline-flex { display: inline-flex; }
+}
 
 .btn-primary {
   background: var(--accent);
@@ -377,6 +385,11 @@ a.card:hover, button.card:hover {
   border-radius: 980px;
   padding: 2px;
 }
+/* Honor Tailwind's utility classes even when combined with .theme-picker. */
+.theme-picker.hidden { display: none; }
+@media (min-width: 640px) {
+  .theme-picker.sm\:inline-flex { display: inline-flex; }
+}
 [data-theme='dark'] .theme-picker { background: rgba(120, 120, 128, 0.32); }
 .theme-picker button {
   background: transparent;
@@ -412,6 +425,67 @@ a.card:hover, button.card:hover {
 html:not([data-theme='dark']) .theme-picker button[data-theme='dark'] {
   color: #000;
 }
+
+/* ─── Theme dropdown (mobile) ─── */
+.theme-menu { position: relative; }
+.theme-menu > summary {
+  list-style: none;
+  cursor: pointer;
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 980px;
+  color: var(--label-2);
+  background: rgba(0, 0, 0, 0.08);
+  transition: background-color 0.18s var(--ease), color 0.18s var(--ease);
+}
+.theme-menu > summary::-webkit-details-marker { display: none; }
+.theme-menu > summary:hover { color: var(--label-1); }
+[data-theme='dark'] .theme-menu > summary { background: rgba(120, 120, 128, 0.32); }
+.theme-menu[open] > summary {
+  background: var(--surface);
+  color: var(--label-1);
+  box-shadow: 0 0 0 0.5px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.08);
+}
+[data-theme='dark'] .theme-menu[open] > summary {
+  background: var(--surface-2);
+  box-shadow: 0 0 0 0.5px rgba(255,255,255,0.08);
+}
+.theme-menu-icon { width: 14px; height: 14px; }
+/* Only show the icon that matches the current preference. */
+.theme-menu-icon-system, .theme-menu-icon-dark { display: none; }
+html[data-theme-pref='system'] .theme-menu-icon-light { display: none; }
+html[data-theme-pref='system'] .theme-menu-icon-system { display: inline; }
+html[data-theme-pref='dark']   .theme-menu-icon-light { display: none; }
+html[data-theme-pref='dark']   .theme-menu-icon-dark   { display: inline; }
+
+.theme-menu-panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  flex-direction: column;
+  align-items: stretch;
+  padding: 4px;
+  background: var(--surface);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius-md, 14px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.12), 0 2px 6px rgba(0,0,0,0.06);
+  min-width: 140px;
+  z-index: 60;
+}
+[data-theme='dark'] .theme-menu-panel {
+  background: var(--surface-2);
+  border-color: rgba(255,255,255,0.08);
+}
+.theme-menu-panel button {
+  justify-content: flex-start;
+  padding: 0.5rem 0.7rem;
+  font-size: 0.88rem;
+  gap: 10px;
+}
+.theme-menu-panel svg { width: 14px; height: 14px; }
 
 /* ─── Hero glow ─── */
 .hero-glow { position: relative; isolation: isolate; }

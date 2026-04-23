@@ -71,8 +71,16 @@
 
         document.addEventListener('click', function (e) {
           var btn = e.target.closest('.theme-picker button');
-          if (!btn) return;
-          apply(btn.dataset.theme);
+          if (btn) {
+            apply(btn.dataset.theme);
+            var menu = btn.closest('details.theme-menu');
+            if (menu) menu.open = false;
+            return;
+          }
+          // Close the theme dropdown when clicking outside of it.
+          document.querySelectorAll('details.theme-menu[open]').forEach(function (d) {
+            if (!d.contains(e.target)) d.open = false;
+          });
         });
 
         if (media.addEventListener) {
